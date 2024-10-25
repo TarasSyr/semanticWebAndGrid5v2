@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="http://example.org/grid_ontology.owl"
+         xmlns="http://example.org/grid_ontology.owl#">
+
+<owl:Ontology rdf:about="http://example.org/grid_ontology.owl"/>
+
+<owl:ObjectProperty rdf:about="#hasAccessRight">
+  <rdfs:domain rdf:resource="#User"/>
+  <rdfs:range rdf:resource="#AccessRight"/>
+</owl:ObjectProperty>
+
+<owl:DatatypeProperty rdf:about="#hasCurrentLoad">
+  <rdfs:domain rdf:resource="#Node"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasAvailableCores">
+  <rdfs:domain rdf:resource="#Node"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+</owl:DatatypeProperty>
+
+<owl:Class rdf:about="#Node">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#User">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#AccessRight">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:NamedIndividual rdf:about="#Node_1">
+  <rdf:type rdf:resource="#Node"/>
+  <hasAvailableCores rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</hasAvailableCores>
+  <hasCurrentLoad rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.5</hasCurrentLoad>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Node_2">
+  <rdf:type rdf:resource="#Node"/>
+  <hasAvailableCores rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">64</hasAvailableCores>
+  <hasCurrentLoad rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.9</hasCurrentLoad>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#User_1">
+  <rdf:type rdf:resource="#User"/>
+  <hasAccessRight rdf:resource="#AccessRight_ReadAccess"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#AccessRight_ReadAccess">
+  <rdf:type rdf:resource="#AccessRight"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#User_2">
+  <rdf:type rdf:resource="#User"/>
+  <hasAccessRight rdf:resource="#AccessRight_WriteAccess"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#AccessRight_WriteAccess">
+  <rdf:type rdf:resource="#AccessRight"/>
+</owl:NamedIndividual>
+
+
+</rdf:RDF>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Навантаження вузла</title>
+</head>
+<body>
+    <h1>Навантаження вузла</h1>
+
+    {% if node_load %}
+        <table border="1">
+            <tr>
+                <th>Id вузла</th>
+                <th>Доступні ядра</th>
+                <th>Кількість завдань</th>
+            </tr>
+            {% for node in node_load %}
+            <tr>
+                <td>{{ node.nodeId }}</td>
+                <td>{{ node.availableCores }}</td>
+                <td>{{ node.taskCount }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Немає даних для цього вузла.</p>
+    {% endif %}
+</body>
+</html>

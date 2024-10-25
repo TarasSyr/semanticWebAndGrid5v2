@@ -1,0 +1,7 @@
+type,id,hasAvailableCores,requiresCores,accessRight,userLogin,userPassword
+Node,1,64,,,,,
+Node,2,32,,,,,
+Task,1,,4,,,,
+Task,2,,8,,,,
+User,1,,,"AddTaskRight","admin","qwerty"
+User,2,,,"ViewOnlyRight","user","user"

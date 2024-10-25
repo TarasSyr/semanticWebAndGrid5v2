@@ -1,0 +1,5 @@
+type,id,availableCores,currentLoad,accessRight
+Node,1,32,0.5,
+Node,2,64,0.9,
+User,1,,,"ReadAccess"
+User,2,,,"WriteAccess"
