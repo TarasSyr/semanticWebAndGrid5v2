@@ -11,5 +11,35 @@
         <input type="text" id="nodeId" name="nodeId"><br><br>
         <input type="submit" value="Показати навантаження вузлів">
     </form>
+
+    <br><br>
+
+    <h1>Присвоєння завдання вузлу</h1>
+    <form action="/assign_task" method="post">
+        <label for="taskId">Оберіть завдання:</label>
+        <select name="taskId" id="taskId">
+            {% for task in tasks %}
+                <option value="{{ task }}">{{ task }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="nodeIdForTask">Оберіть вузол:</label>
+        <select name="nodeIdForTask" id="nodeIdForTask">
+            {% for node in nodes %}
+                <option value="{{ node }}">{{ node }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <input type="submit" value="Присвоїти">
+    </form>
+
+    <script>
+        function showTask(task) {
+            alert(`Ви обрали: ${task}`);
+        }
+    </script>
+
 </body>
 </html>
