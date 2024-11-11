@@ -226,7 +226,7 @@ def home_for_defaults():
     nodes = [str(row.node) for row in graph.query(node_query)]
 
     # Передача списків у шаблон
-    return render_template("home_for_defaults.html", tasks=tasks, nodes=nodes)
+    return render_template("home_for_admins.html", tasks=tasks, nodes=nodes)
 
 
 @app.route("/show_load", methods=["POST"])

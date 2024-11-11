@@ -96,5 +96,10 @@
   <rdf:type rdf:resource="#AccessRight"/>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="#Task_3">
+  <rdf:type rdf:resource="#Task"/>
+  <requiresCores rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">62</requiresCores>
+</owl:NamedIndividual>
+
 
 </rdf:RDF>

@@ -1,14 +1,17 @@
-
 from rdflib import Graph
-
 from flask import Flask, render_template, request, redirect, url_for
 from owlready2 import get_ontology, Thing, DataProperty, ObjectProperty
 import csv
+
+
 
 # Створення онтології
 onto = get_ontology("http://example.org/computation_ontology.owl")
 
 app = Flask(__name__)
+
+g = Graph()
+g.parse("computation_ontology.owl", format="xml")
 
 with onto:
     # Класи
@@ -75,8 +78,6 @@ with onto:
                 print(f"Created {user.name} with access right {access_right.name}")
 
     onto.save(file="computation_ontology.owl", format="rdfxml")
-    g = Graph()
-    g.parse("computation_ontology.owl", format="xml")
 
 
 def get_all_individuals_info(onto):
@@ -117,7 +118,7 @@ def index():
         for login, password in users_info:
             if user == login and userPassword == password:
                 if user == "admin":
-                    return redirect(url_for('home'))  # Перенаправлення на домашню сторінку для admin
+                    return redirect(url_for('home_for_admins'))  # Перенаправлення на домашню сторінку для admin
                 elif user == "user":
                     return redirect(url_for('home_for_defaults'))  # Перенаправлення на іншу сторінку для defaultuser
 
@@ -126,24 +127,11 @@ def index():
 
     return render_template("index.html")
 
-@app.route("/home")
-def home():
-    data = request.form
-    taskId = data.get("taskId")
-    requiresCores = data.get("requiresCores")
-    query=f"""
-        PREFIX onto: <http://example.org/computation_ontology#>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        
-        INSERT {
-            onto:{taskId} a onto:Task ;
-            onto:requiresCores "{requiresCores}"^^xsd:integer .
-        }
-    """
-    g.query(query)
-    g.serialize("computation_ontology.owl", format="xml")
 
-    return render_template("home.html")
+@app.route("/home_for_defaults")
+def home_for_defaults():
+    return render_template("home_for_defaults.html")
+
 
 @app.route("/assign_task", methods=["POST"])
 def assign_task():
@@ -207,22 +195,25 @@ def assign_task():
         # Призначення задачі вузлу
         query_assign = f"""
                 PREFIX onto: <http://example.org/computation_ontology.owl#>
-                INSERT {{
+                INSERT DATA {{
                     <{taskId}> onto:assignedToNode <{nodeId}> .
                 }}
-
             """
         g.update(query_assign)
+        g.serialize(destination="computation_ontology.owl", format="xml")
+        onto.save("computation_ontology.owl")
         message = f"Завдання {taskId} успішно присвоєно вузлу {nodeId}."
     else:
         message = f"Node overloaded: недостатньо доступних ядер для присвоєння завдання (потрібно: {requiresCores}, доступно: {coresLeft})."
 
+    g.serialize(destination="computation_ontology.owl", format="xml")
+    onto.save("computation_ontology.owl")
 
     return render_template("assign_result.html", message=message)
 
 
-@app.route("/home_for_defaults")
-def home_for_defaults():
+@app.route("/home_for_admins")
+def home_for_admins():
     task_query = """
             PREFIX ex: <http://example.org/computation_ontology.owl#>
             SELECT ?task 
@@ -249,23 +240,31 @@ def home_for_defaults():
     nodes = [str(row.node) for row in graph.query(node_query)]
 
     # Передача списків у шаблон
-    return render_template("home_for_defaults.html", tasks=tasks, nodes=nodes)
+    return render_template("home_for_admins.html", tasks=tasks, nodes=nodes)
 
 
 @app.route("/show_load", methods=["POST"])
 def show_load():
     data = request.form
     nodeId = data.get("nodeId")
-    print(f"Отриманий вузол: {nodeId}")
 
     query = f"""
         PREFIX ex: <http://example.org/computation_ontology.owl#>
 
-        SELECT ?nodeId ?hasAvailableCores
+        SELECT ?nodeId ?hasAvailableCores (COUNT(?task) AS ?taskCount) (SUM(?requiresCores) AS ?occupiedCores)
         WHERE {{
             VALUES ?nodeId {{ ex:{nodeId} }}
+
+            # Загальна кількість ядер у вузлі
             ?nodeId ex:hasAvailableCores ?hasAvailableCores .
+
+            # Завдання, призначені для вузла, і кількість ядер, які вони потребують
+            OPTIONAL {{
+                ?task ex:assignedToNode ?nodeId ;
+                      ex:requiresCores ?requiresCores .
+            }}
         }}
+        GROUP BY ?nodeId ?hasAvailableCores
     """
 
     # Виконання запиту
@@ -274,15 +273,21 @@ def show_load():
     # Обробка результатів
     node_load = []
     for row in result:
+        total_cores = int(row.hasAvailableCores)
+        occupied_cores = int(
+            row.occupiedCores) if row.occupiedCores is not None else 0  # Якщо немає завдань, зайняті ядра = 0
+        available_cores = total_cores - occupied_cores  # Розрахунок вільних ядер
+
         node_load.append({
             "nodeId": str(row.nodeId),
-            "availableCores": str(row.hasAvailableCores)
-            #"taskCount": str(row.taskCount)
+            "availableCores": available_cores,
+            "taskCount": int(row.taskCount)
         })
-
-    print("Результат пошуку вузла:  %s", node_load)
     # Передача результатів у шаблон
     return render_template("show_load.html", node_load=node_load)
 
+
+
 if __name__=="__main__":
+    g.parse("computation_ontology.owl", format="xml")
     app.run(debug=True, port=5005)
