@@ -1,0 +1,10 @@
+type,id,hasAvailableCores,requiresCores,accessRight,userLogin,userPassword,maxTimeUsage,maxTasksAssignNumber
+Node,1,64,,,,,,
+Node,2,32,,,,,,
+Task,1,,4,,,,,
+Task,2,,8,,,,,
+Task,3,,62,,,,,
+User,1,,,AddTaskRight,admin,qwerty,100,1
+User,2,,,ViewOnlyRight,user,user,0,0
+User,3,,,"AddTaskRight","admin2","qwerty",200,2
+User,4,,,"ViewOnlyRight","user","user",0,0
